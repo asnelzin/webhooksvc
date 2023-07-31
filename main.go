@@ -13,17 +13,20 @@ import (
 	"time"
 )
 
+// Task represents a task to be executed.
 type Task struct {
 	ID      string
 	Command string
 }
 
+// Config represents a configuration file with tasks.
 type Config struct {
 	Tasks []Task
 }
 
+// LoadTasksConfig loads tasks from a YAML file.
 func LoadTasksConfig(path string) (map[string]Task, error) {
-	doc, err := os.ReadFile(path)
+	doc, err := os.ReadFile(path) // nolint
 	if err != nil {
 		return nil, fmt.Errorf("could not read config file: %w", err)
 	}
@@ -69,8 +72,7 @@ func main() {
 		signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 		<-stop
 		log.Printf("[WARN] interrupt signal received")
-		err := s.Shutdown()
-		if err != nil {
+		if serr := s.Shutdown(); serr != nil {
 			log.Fatalf("[ERROR] could not shutdown server: %v", err)
 		}
 	}()

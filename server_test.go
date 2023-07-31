@@ -37,17 +37,19 @@ func TestServer_auth(t *testing.T) {
 	ts := httptest.NewServer(srv.auth(okCtrl))
 	defer ts.Close()
 
-	req, err := http.NewRequest("POST", ts.URL, nil)
+	req, err := http.NewRequest("POST", ts.URL, http.NoBody)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "blah")
 	resp, err := http.DefaultClient.Do(req)
+	defer resp.Body.Close() // nolint
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	req, err = http.NewRequest("POST", ts.URL, nil)
+	req, err = http.NewRequest("POST", ts.URL, http.NoBody)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "wrong-key")
 	resp, err = http.DefaultClient.Do(req)
+	defer resp.Body.Close() // nolint
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 }
@@ -58,6 +60,7 @@ func TestServer_ping(t *testing.T) {
 	defer ts.Close()
 
 	resp, err := http.Get(ts.URL + "/ping")
+	defer resp.Body.Close() // nolint
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
@@ -66,7 +69,7 @@ type MockExecutor struct {
 	ExecFn func(command string, out io.Writer) error
 }
 
-func (m *MockExecutor) Exec(ctx context.Context, command string, out io.Writer) error {
+func (m *MockExecutor) Exec(_ context.Context, command string, out io.Writer) error {
 	return m.ExecFn(command, out)
 }
 
@@ -86,10 +89,11 @@ func TestServer_executeTaskCtrl(t *testing.T) {
 	ts := httptest.NewServer(srv.routes())
 	defer ts.Close()
 
-	req, err := http.NewRequest("POST", ts.URL+"/tasks/task1/execute", nil)
+	req, err := http.NewRequest("POST", ts.URL+"/tasks/task1/execute", http.NoBody)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "blah")
 	resp, err := http.DefaultClient.Do(req)
+	defer resp.Body.Close() // nolint
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 

@@ -12,10 +12,12 @@ import (
 	"time"
 )
 
+// Executor is an interface for executing commands.
 type Executor interface {
 	Exec(ctx context.Context, command string, out io.Writer) error
 }
 
+// Server is a webhook server.
 type Server struct {
 	AuthKey  string
 	Tasks    map[string]Task
@@ -25,16 +27,21 @@ type Server struct {
 	httpsrv *http.Server
 }
 
+// Run starts the server.
 func (s *Server) Run(addr string) error {
 	s.runLock.Lock()
 	s.httpsrv = &http.Server{
-		Addr:    addr,
-		Handler: s.routes(),
+		Addr:              addr,
+		Handler:           s.routes(),
+		ReadHeaderTimeout: time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       time.Second,
 	}
 	s.runLock.Unlock()
 	return s.httpsrv.ListenAndServe()
 }
 
+// Shutdown gracefully stops the server.
 func (s *Server) Shutdown() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -65,10 +72,12 @@ func (s *Server) auth(next http.Handler) http.Handler {
 	})
 }
 
+// ExecLogWriter is an io.Writer that writes to a log.Logger.
 type ExecLogWriter struct {
 	Logger *log.Logger
 }
 
+// Write writes bytes to the logger with prefix.
 func (l *ExecLogWriter) Write(bytes []byte) (n int, err error) {
 	l.Logger.Printf("[INFO] > %s", bytes)
 	return len(bytes), nil
