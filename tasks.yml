@@ -1,0 +1,4 @@
+tasks:
+  - id: test
+    command: |
+      echo "Hello World"

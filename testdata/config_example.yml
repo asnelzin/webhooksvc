@@ -1,0 +1,8 @@
+tasks:
+  - id: hello-world
+    command: |
+      echo "Hello World"
+  - id: restart-compose
+    command: |
+      docker-compose down
+      docker-compose up -d

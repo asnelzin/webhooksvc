@@ -1,0 +1,14 @@
+*.cov
+.cover
+target
+/logs/
+/target/
+/var/
+.vscode
+.idea/
+*.prof
+*.test
+*.http
+.DS_Store
+webhooksvc
+/bin/

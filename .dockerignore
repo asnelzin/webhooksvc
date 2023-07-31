@@ -1,0 +1,24 @@
+/logs/
+/target/
+/var/
+/.vscode/
+/.idea/
+/bin/
+/.git/
+/.github/
+/testdata/
+
+# source files
+docker-compose.yml
+rest.http
+Makefile
+
+# generated files
+*.cov
+.cover
+target
+debug
+debug.test
+*.prof
+*.test
+webhooksvc

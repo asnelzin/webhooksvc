@@ -1,0 +1,22 @@
+services:
+  webhooksvc:
+    build: .
+    image: ghcr.io/asnelzin/webhooksvc:latest
+    container_name: "webhooksvc"
+    hostname: "webhooksvc"
+    restart: always
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+    ports:
+      - "80:8080"
+
+    environment:
+      - AUTH_KEY=secret
+      - CONFIG=/srv/etc/tasks.yml
+    volumes:
+      - ./tasks.yml:/srv/etc/tasks.yml:ro
