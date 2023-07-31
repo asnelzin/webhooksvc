@@ -32,7 +32,7 @@ func TestShellExecutor_ExecTimeOut(t *testing.T) {
 
 	buf := bytes.NewBuffer(nil)
 	st := time.Now()
-	err := se.Exec(context.Background(), "sleep 2", buf)
+	err := se.Exec(context.Background(), "sleep 1 && sleep 1", buf)
 	require.Error(t, err)
 	assert.True(t, time.Since(st) < 2*time.Second)
 }
